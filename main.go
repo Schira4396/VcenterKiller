@@ -72,7 +72,7 @@ func main() {
 		{
 			t, err := ioutil.ReadFile(filename)
 			_ = err
-			fmt.Println(string(t))
+			// fmt.Println(string(t))
 			if exp_type == "ssh" {
 				c_21972.Upload_ssh_authorized_keys(url, string(t))
 			} else {
