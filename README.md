@@ -3,6 +3,9 @@
 目前本工具处于刚上线阶段，可能会有很多BUG，如果遇到bug请提issue
 
 后续会集成基于CVE-2021-21985一键添加管理员用户的功能，这样就不必非要在服务器执行ldap_adduer脚本了。
+以及vcenter的log4j
+Vmware workstation One Access ...
+VMware vRealize Operations Manager ...
 #### 1.它是什么
 
 一款针对Vcenter的综合利用工具，包含目前最主流的CVE-2021-21972、CVE-2021-21985以及CVE-2021-2205，提供一键上传webshell，命令执行或者上传公钥使用SSH连接
