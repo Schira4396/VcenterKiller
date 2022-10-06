@@ -27,6 +27,8 @@ VMware vRealize Operations Manager ...
 
 一般Vcenter都放在内网，并且漏洞特征也都是烂大街，像什么fscan啦一扫就出来了，那么VcenterKiller就不是用来检测目标是否存在漏洞的，而是直接尝试利用，一般通过CS/MSF在跳板上来执行，所以去掉了其余花里胡哨的输出。
 
+为什么用GO，因为Python写起来方便但是用起来很蛋疼，各种依赖库，编译吧体积太大，C#没法跨平台，写到一半扔了。
+
 #### 3.使用方法
 
 ```bash
