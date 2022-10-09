@@ -1,6 +1,8 @@
 package main
 
 import (
+	"GO_VCENTER/src/c22954"
+	"GO_VCENTER/src/c22972"
 	"GO_VCENTER/src/c_21972"
 	"GO_VCENTER/src/c_21985"
 	"GO_VCENTER/src/c_22005"
@@ -40,12 +42,12 @@ func usage() {
 
 func banner() {
 	ban := `
-			__     __             _              _  ___ _ _
-			\ \   / /__ ___ _ __ | |_ ___ _ __  | |/ (_) | | ___ _ __
-			 \ \ / / __/ _ \ '_ \| __/ _ \ '__| | ' /| | | |/ _ \ '__|
-	  		  \ V / (_|  __/ | | | ||  __/ |    | . \| | | |  __/ |
-	   		   \_/ \___\___|_| |_|\__\___|_|    |_|\_\_|_|_|\___|_|       by schira4396
-			   `
+__     __             _              _  ___ _ _
+\ \   / /__ ___ _ __ | |_ ___ _ __  | |/ (_) | | ___ _ __
+ \ \ / / __/ _ \ '_ \| __/ _ \ '__| | ' /| | | |/ _ \ '__|
+  \ V / (_|  __/ | | | ||  __/ |    | . \| | | |  __/ |
+   \_/ \___\___|_| |_|\__\___|_|    |_|\_\_|_|_|\___|_|       by schira4396
+`
 	fmt.Println(ban)
 }
 
@@ -59,7 +61,11 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 	banner()
-	if len(os.Args) == 1 {
+	if len(os.Args) == 3 {
+		usage()
+		os.Exit(0)
+	}
+	if url == "" || cve == "" {
 		usage()
 		os.Exit(0)
 	}
@@ -110,6 +116,22 @@ func main() {
 				fmt.Println("\"" + exp_type + "\"" + " is an incorrect parameter.")
 			}
 
+		}
+	case "22954":
+		{
+			if command != "" {
+				c22954.Start(url, command)
+			} else {
+				usage()
+			}
+		}
+	case "22972":
+		{
+			c22972.Start(url, "", "22972")
+		}
+	case "31656":
+		{
+			c22972.Start(url, "", "31656")
 		}
 	}
 
