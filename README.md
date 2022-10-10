@@ -68,6 +68,7 @@ V1.0 上线
 V1.1 针对CVE-2021-21985添加了利用rmi反弹shell的功能，前提是你要启动一个rmi服务器，例如jndi-injection-exploit
 V1.2 增加了针对Vcenter的log4j检测和验证能力
 V1.3 增加了对Vmware WorkSpace One Access的漏洞验证功能，包括CVE-2022-22954 远程命令执行；CVE-2022-22972、CVE-2022-31656身份鉴别绕过
+V1.3.1 修复了检测log4j时忽略了端口的问题，有的服务会更改默认的443端口
 ...
 ```
 
