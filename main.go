@@ -112,6 +112,14 @@ func main() {
 					usage()
 				}
 
+			} else if exp_type == "exec" {
+				if command == "" {
+					usage()
+					os.Exit(0)
+				} else {
+					log4jcenter.Exec_cmd(url, rmi, command)
+				}
+
 			} else {
 				fmt.Println("\"" + exp_type + "\"" + " is an incorrect parameter.")
 			}

