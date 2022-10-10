@@ -71,6 +71,7 @@ V1.2 增加了针对Vcenter的log4j检测和验证能力
 V1.3 增加了对Vmware WorkSpace One Access的漏洞验证功能，包括CVE-2022-22954 远程命令执行；CVE-2022-22972、CVE-2022-31656身份鉴别绕过
 V1.3.1 修复了检测log4j时忽略了端口的问题，有的服务会更改默认的443端口
 V1.3.2 修改了针对log4j的利用方式，通过tomcatbypassEcho的方式执行命令并获取回显。vcenter 7.0 linux测试通过。
+V1.3.3 增加了对6.7和7.0版本的区别利用，7.0必须使用tomcatbypass，而6.7使用普通的basic就行了
 ...
 ```
 

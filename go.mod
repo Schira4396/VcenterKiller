@@ -3,6 +3,7 @@ module GO_VCENTER
 go 1.18
 
 require (
+	github.com/beevik/etree v1.1.0 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/cheekybits/genny v1.0.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
