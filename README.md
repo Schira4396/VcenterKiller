@@ -15,20 +15,9 @@
 
 
 
-后续会集成基于CVE-2021-21985一键添加管理员用户的功能，这样就不必非要先拿shell，再通过python在服务器执行ldap_adduer脚本了，总之有更好的方式。
-
-
-
-后续
-
-
-
-Vmware workstation One Access ...
-
-VMware vRealize Operations Manager ...
 #### 1.它是什么
 
-一款针对Vcenter（暂时）的综合**验证**工具，包含目前最主流的CVE-2021-21972、CVE-2021-21985以及CVE-2021-22005，提供一键上传webshell，命令执行或者上传公钥并使用SSH连接的功能，以及针对Apache Log4j CVE-2021-44228漏洞在Vcenter上的检测以及利用，比如命令执行并获取回显。
+一款针对Vcenter（暂时）的综合**验证**工具，包含目前最主流的CVE-2021-21972、CVE-2021-21985以及CVE-2021-22005，提供一键上传webshell，命令执行或者上传公钥并使用SSH连接的功能，以及针对Apache Log4j CVE-2021-44228漏洞在Vcenter上的检测以及利用，比如命令执行并获取回显（需要一个ldap恶意服务器）。
 
 #### 2.它的定位
 
@@ -72,6 +61,7 @@ V1.3 增加了对Vmware WorkSpace One Access的漏洞验证功能，包括CVE-20
 V1.3.1 修复了检测log4j时忽略了端口的问题，有的服务会更改默认的443端口
 V1.3.2 修改了针对log4j的利用方式，通过tomcatbypassEcho的方式执行命令并获取回显。vcenter 7.0 linux测试通过。
 V1.3.3 增加了对6.7和7.0版本的区别利用，7.0必须使用tomcatbypass，而6.7使用普通的basic就行了
+v1.3.4 修改了对log4j的验证逻辑，目前的逻辑是循环5次不同payload无差别乱打，有回显就有，没有就没有
 ...
 ```
 
