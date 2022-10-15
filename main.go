@@ -117,7 +117,10 @@ func main() {
 					usage()
 					os.Exit(0)
 				} else {
+
+					go log4jcenter.Start_server()
 					log4jcenter.Execc(url, rmi, command)
+
 				}
 
 			} else {
