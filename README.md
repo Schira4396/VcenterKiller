@@ -2,6 +2,11 @@
 ![vckiller](https://socialify.git.ci/Schira4396/VcenterKiller/image?description=1&descriptionEditable=%E4%B8%80%E6%AC%BE%E9%92%88%E5%AF%B9Vcenter%E7%9A%84%E7%BB%BC%E5%90%88%E5%88%A9%E7%94%A8%E5%B7%A5%E5%85%B7&font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Plus&stargazers=1&theme=Light)
 
 # VcenterKiller
+
+#### -1.注意
+
+在本地搭建漏洞环境的兄弟，用vckiller验证log4j基本上会失败，因为在Vmware 虚拟机环境下用NAT模式的话，验证模块中的出口网卡会被判定为127.0.0.1，这样目标访问的LDAP Server地址就变成了127.0.0.1，验证就失败了😏
+
 #### 0.必读
 如果遇到bug请提issue，写这个工具单纯是为了方便，它没有什么高大上的东西
 
