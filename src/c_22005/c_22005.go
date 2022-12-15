@@ -67,7 +67,7 @@ func Create_agent(url, log_param, agent_name string) {
 		if strings.Contains(err.Error(), "Timeout") {
 
 		} else {
-			fmt.Println("[-] 上传失败，请检查网络.")
+			fmt.Println("[-] Upload failure, please check network.")
 			os.Exit(0)
 		}
 
@@ -116,16 +116,16 @@ func Upload_shell(url, log_param, agent_name, wb_str string) {
 		if strings.Contains(err.Error(), "Timeout") {
 
 		} else {
-			fmt.Println("[-] 上传失败，请检查网络.")
+			fmt.Println("[-] Upload failure, please check network.")
 			os.Exit(0)
 		}
 	}
 	if resp.StatusCode == 201 || resp.StatusCode == 200 {
 
-		fmt.Println("[+] 上传成功，检查Webshell...")
+		fmt.Println("[+] Upload success，check Webshell...")
 	} else {
 		// fmt.Println(resp.StatusCode)
-		fmt.Println("[-] 上传失败.")
+		fmt.Println("[-] Upload failure.")
 		os.Exit(0)
 	}
 
@@ -213,7 +213,7 @@ func Check(url string) {
 		fmt.Println("[+] shell url: " + shell_url)
 
 	} else {
-		fmt.Println("[-] 利用失败0.0")
+		fmt.Println("[-] Exploit failure 0.0")
 	}
 }
 
@@ -223,7 +223,7 @@ func Test(url, filename string) {
 	Create_agent(url, log_param, agent_name)
 	ss, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Println("[-] 读取文件失败.")
+		fmt.Println("[-] Read file failure.")
 		os.Exit(0)
 	}
 	s := string(ss)
