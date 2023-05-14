@@ -71,7 +71,7 @@ func main() {
 	}
 	fmt.Println("[*] url: " + url)
 	switch cve {
-	case "22205":
+	case "22005":
 		{
 			c_22005.Test(url, filename)
 		}
