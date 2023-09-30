@@ -15,6 +15,8 @@ func Start(url, cmd string) {
 
 }
 
+var Proxy_server = ""
+
 func check(content string) bool {
 	if strings.Contains(content, "console.log") {
 		return true
@@ -30,6 +32,7 @@ func exploit(url, command string) {
 	// fmt.Println(target)
 	client := req.C()
 	client.EnableForceHTTP1()
+	client.SetProxyURL(Proxy_server)
 	client.EnableInsecureSkipVerify()
 	// client.SetProxyURL("http://127.0.0.1:8080")
 	resp, err := client.R().Get(target)

