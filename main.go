@@ -75,7 +75,7 @@ func main() {
 	}
 	fmt.Println("[*] url: " + url)
 	switch cve {
-	case "22205":
+	case "22005":
 		{
 			if checkProxyServer(proxy) == true {
 				c_22005.Proxy_server = proxy
